@@ -1,3 +1,2 @@
-We are THE A-TEAM! Nikola <<< Gasser
-
-Hallo Nikola
+To solve the typeguard problem in ydata-profiling:
+- Just comment out decorator @typechecked for Class ProfileReport in C:\ProgramData\anaconda3\Lib\site-packages\ydata_profiling\profile_report.py on Line 53.
