@@ -1,1 +1,1 @@
-We are THE A-TEAM! Nikola > Gasser
+We are THE A-TEAM! Nikola <<< Gasser
