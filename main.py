@@ -19,10 +19,7 @@ data['Machine failure'][data['OSF']==1]=4
 data['Machine failure'][data['RNF']==1]=5
 data.drop(['TWF','HDF','PWF','OSF','RNF'],axis=1,inplace=True)
 data['Power'] = data['Rotational speed [rpm]'] * data['Torque [Nm]']
-#data['Power wear'] = data['Power'] * data['Tool wear [min]']
 data['Temperature difference'] = data['Process temperature [K]'] - data['Air temperature [K]']
-#data['Temperature difference vs. power'] = data['Temperature difference'] / data['Power']
-#data['Temperature difference vs. Rotational speed'] = data['Temperature difference'] / data['Rotational speed [rpm]']
 data = data[[
     'Machine failure',
     'Type',
