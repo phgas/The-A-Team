@@ -13,8 +13,8 @@
             padding: 0;
         }
         .container {
-            width: 100%; /* Full width */
-            max-width: 1200px; /* Adjust max-width as needed */
+            width: 100%;
+            max-width: 1200px;
             margin: auto;
             padding: 20px;
         }
@@ -51,8 +51,7 @@
             border-radius: 5px;
             margin-top: 20px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px; /* Add margin bottom to separate containers */
-
+            margin-bottom: 20px;
         }
         input[type="file"],
         input[type="text"],
@@ -93,11 +92,11 @@
             padding: 20px;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px; /* Add margin bottom to separate containers */
+            margin-bottom: 20px;
         }
         .data-container h2 {
-            margin-top: 0; /* Remove margin top for consistency */
-            margin-bottom: 10px; /* Adjust spacing */
+            margin-top: 0;
+            margin-bottom: 10px;
         }
         table {
             width: 100%;
@@ -125,7 +124,7 @@
         <form id="uploadForm" method="post" enctype="multipart/form-data">
             <h2>Upload your Data</h2>
             {% csrf_token %}
-            <input type="file" name="file" accept=".csv"><br><br>
+            <input type="file" name="file" accept=".csv" id="fileInput"><br><br>
             <label for="api_key">API Key:</label>
             <input type="text" id="api_key" name="api_key"><br><br>
             <label for="operation">Operation:</label>
@@ -134,7 +133,7 @@
                 <option value="prediction">Get Prediction</option>
                 <option value="model">Create Model</option>
             </select><br><br>
-            <input id="submitButton" type="submit" value="Upload">
+            <input id="submitButton" type="submit" value="Upload" disabled>
         </form>
 
         {% if success %}
@@ -154,7 +153,7 @@
                         {% for entry in data %}
                             <tr>
                                 {% for key, value in entry.items %}
-                                    <th>{{value}}</th>
+                                    <th>{{ value }}</th>
                                 {% endfor %}
                             </tr>
                         {% endfor %}
@@ -162,7 +161,7 @@
                 </table>
             </div>
         </div>
-        {% endif %}      
+        {% endif %}
     </div>
 
     <!-- DataTables.js and jQuery -->
@@ -172,11 +171,36 @@
     <script>
         $(document).ready(function() {
             $('#csvDataTable').DataTable({
-                "scrollX": false,  // Enable horizontal scrolling if needed
-                "paging": false,    // Disable pagination for small tables
+                "scrollX": false,
+                "paging": false,
+            });
+
+            // Function to enable/disable submit button based on form inputs
+            function validateFormInputs() {
+                var fileSelected = $('#fileInput').get(0).files.length > 0;
+                var apiKeyEntered = $('#api_key').val().trim() !== '';
+                var operationSelected = $('#operation').val() !== 'select';
+
+                if (fileSelected && apiKeyEntered && operationSelected) {
+                    $('#submitButton').prop('disabled', false);
+                    $('#submitButton').css('background', '#4CAF50'); // Green color
+                    $('#submitButton').css('cursor', 'pointer');
+                } else {
+                    $('#submitButton').prop('disabled', true);
+                    $('#submitButton').css('background', '#ccc'); // Grey color
+                    $('#submitButton').css('cursor', 'default');
+                }
+            }
+
+
+            // Call validateFormInputs initially and on input change
+            validateFormInputs();
+
+            $('#fileInput, #api_key, #operation').change(function() {
+                validateFormInputs();
             });
         });
     </script>
-    
+
 </body>
 </html>
