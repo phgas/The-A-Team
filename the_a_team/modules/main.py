@@ -75,6 +75,7 @@ def create_new_model(training_data, model_path):
     best_mode = compare_models(sort='AUC')
     calibrated_model_failure = calibrate_model(best_mode)
     save_model(calibrated_model_failure, model_path)
+    plot_model(model, plot="feature", save=True)
 
     return best_mode
 
@@ -87,25 +88,25 @@ def read_existing_model(path):
 def get_prediction(model, unseen_data):
     prediction = predict_model(model, data=unseen_data, raw_score=True)
     prediction = prediction.rename(
-            columns={
-                'prediction_score_0': 'NO_FAILURE',
-                'prediction_score_1': 'Tool-Wear_FAILURE', 
-                'prediction_score_2': 'Heat-Dissipation FAILURE', 
-                'prediction_score_3': 'Power_FAILURE',
-                'prediction_score_4': 'Overstrain_FAILURE', 
-                'prediction_score_5': 'Random_FAILURE'})
+        columns={
+            'prediction_score_0': 'NO_FAILURE',
+            'prediction_score_1': 'Tool-Wear_FAILURE',
+            'prediction_score_2': 'Heat-Dissipation FAILURE',
+            'prediction_score_3': 'Power_FAILURE',
+            'prediction_score_4': 'Overstrain_FAILURE',
+            'prediction_score_5': 'Random_FAILURE'})
     return prediction
 
 
 if __name__ == "__main__":
-
+    """
     is_valid_training_data, training_data_raw = read_training_data(
         "ai4i2020.csv")
     if is_valid_training_data:
         training_data_prepared = prepare_data(training_data_raw)
         model_failure = create_new_model(
             training_data_prepared, "ai4i2020_pycaret_model")
-
+    """
     is_valid_prediction_data, prediction_data_raw = read_prediction_data(
         "prediction_data.csv")
     if is_valid_prediction_data:
@@ -114,6 +115,8 @@ if __name__ == "__main__":
         model = read_existing_model("ai4i2020_pycaret_model")
         prediction = get_prediction(
             model, prediction_data_prepared)
+
+        
 
         print("Machine Failure Prediction:")
         print(prediction)
