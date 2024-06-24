@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload CSV</title>
+</head>
+<body>
+    <h1>Upload CSV File</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="file" accept=".csv"><br><br>
+        <label for="api_key">API Key:</label>
+        <input type="text" id="api_key" name="api_key"><br><br>
+        <label for="operation">Operation:</label>
+        <select id="operation" name="operation">
+            <option value="prediction">Get Prediction</option>
+            <option value="model">Create Model</option>
+        </select><br><br>
+        <input type="submit" value="Upload">
+    </form>
+
+    {% if success %}
+    <h2>API Response:</h2>
+    <p>Success: {{ success }}</p>
+    <p>Processing Time (ms): {{ processing_time_ms }}</p>
+    
+    {% if data %}
+    <h3>Data:</h3>
+    <ul>{{ data }}</ul>
+    {% else %}
+    <p>No data returned.</p>
+    {% endif %}
+    
+    {% endif %}
+</body>
+</html>
