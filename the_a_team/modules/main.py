@@ -1,8 +1,6 @@
 import numpy as np
 import pandas as pd
 from pycaret.classification import *
-from IPython.core.display_functions import display
-import csv
 
 
 def read_prediction_data(path):
@@ -69,7 +67,6 @@ def prepare_data(data):
 
 
 def create_new_model(training_data, model_path):
-    # Machine failure prediction (binary classification)
     setup_data = setup(training_data, target='Machine failure',
                        session_id=42, data_split_stratify=True)
     best_mode = compare_models(sort='AUC')
@@ -86,7 +83,7 @@ def read_existing_model(path):
 def get_prediction(model, unseen_data):
     prediction = predict_model(model, data=unseen_data, raw_score=True)
     predictions = []
-    
+
     for index, row in prediction.iterrows():
         pred_dict = {
             'Type': unseen_data['Type'][index],
@@ -99,25 +96,25 @@ def get_prediction(model, unseen_data):
             'Temperature difference': f"{unseen_data['Temperature difference'][index]:.1f}",
             'No_FAILURE': row['prediction_score_0'],
             'Toolwear_FAILURE': row['prediction_score_1'],
-            'Heat-Dissipation FAILURE': row['prediction_score_2'],
+            'Heat-Dissipation_FAILURE': row['prediction_score_2'],
             'Power_FAILURE': row['prediction_score_3'],
             'Overstrain_FAILURE': row['prediction_score_4'],
             'Random_FAILURE': row['prediction_score_5']
         }
         predictions.append(pred_dict)
-    
+
     return predictions
 
 
 if __name__ == "__main__":
-    """
+
     is_valid_training_data, training_data_raw = read_training_data(
         "ai4i2020.csv")
     if is_valid_training_data:
         training_data_prepared = prepare_data(training_data_raw)
         model_failure = create_new_model(
             training_data_prepared, "ai4i2020_pycaret_model")
-    """
+
     is_valid_prediction_data, prediction_data_raw = read_prediction_data(
         "prediction_data.csv")
     if is_valid_prediction_data:
@@ -126,8 +123,3 @@ if __name__ == "__main__":
         model = read_existing_model("ai4i2020_pycaret_model")
         prediction = get_prediction(
             model, prediction_data_prepared)
-
-        
-
-        print("Machine Failure Prediction:")
-        print(prediction)

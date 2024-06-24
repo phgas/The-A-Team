@@ -171,7 +171,8 @@ def home(request):
             context = {
                 'success': response_data.get('success', ''),
                 'processing_time_ms': response_data.get('processing_time_ms', ''),
-                'data': data
+                'data': data,
+                'failure_colors': ['Toolwear_FAILURE', 'Heat-Dissipation FAILURE', 'Power_FAILURE', 'Overstrain_FAILURE', 'Random_FAILURE']
             }
             return render(request, 'home.html', context)
         else:
