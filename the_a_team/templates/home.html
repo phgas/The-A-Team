@@ -1,35 +1,182 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>Upload CSV</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.css">
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 100%; /* Full width */
+            max-width: 1200px; /* Adjust max-width as needed */
+            margin: auto;
+            padding: 20px;
+        }
+        header {
+            background: #333;
+            color: #fff;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: #77aaff 3px solid;
+        }
+        header .logo {
+            display: flex;
+            align-items: center;
+        }
+        header .logo img {
+            width: 100px;
+            height: auto;
+            margin: 0 20px;
+        }
+        header .logo h1 {
+            font-size: 24px;
+            margin: 0;
+        }
+        header .logo .text-left,
+        header .logo .text-right {
+            display: flex;
+            align-items: center;
+        }
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px; /* Add margin bottom to separate containers */
+
+        }
+        input[type="file"],
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        input[type="submit"] {
+            display: inline-block;
+            background: #77aaff;
+            color: #fff;
+            border: 0;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 0.3s ease-in-out;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        input[type="submit"]:enabled {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        input[type="submit"]:hover:enabled {
+            background: #5599ee;
+        }
+        h2, h3 {
+            color: #333;
+        }
+        p, ul {
+            color: #666;
+        }
+        .data-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px; /* Add margin bottom to separate containers */
+        }
+        .data-container h2 {
+            margin-top: 0; /* Remove margin top for consistency */
+            margin-bottom: 10px; /* Adjust spacing */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
 </head>
 <body>
-    <h1>Upload CSV File</h1>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <input type="file" name="file" accept=".csv"><br><br>
-        <label for="api_key">API Key:</label>
-        <input type="text" id="api_key" name="api_key"><br><br>
-        <label for="operation">Operation:</label>
-        <select id="operation" name="operation">
-            <option value="prediction">Get Prediction</option>
-            <option value="model">Create Model</option>
-        </select><br><br>
-        <input type="submit" value="Upload">
-    </form>
+    <header>
+        <a href="http://127.0.0.1:8000/" style="text-decoration: none; color: inherit;">
+            <div class="logo">
+                <div class="text-left"><h1>The</h1></div>
+                <img src="{% static 'images/logo.png' %}" alt="The-A-Team Logo">
+                <div class="text-right"><h1>Team</h1></div>
+            </div>
+        </a>
+    </header>
+    <div class="data-container">
+        <form id="uploadForm" method="post" enctype="multipart/form-data">
+            <h2>Upload your Data</h2>
+            {% csrf_token %}
+            <input type="file" name="file" accept=".csv"><br><br>
+            <label for="api_key">API Key:</label>
+            <input type="text" id="api_key" name="api_key"><br><br>
+            <label for="operation">Operation:</label>
+            <select id="operation" name="operation">
+                <option value="select">Select Operation</option>
+                <option value="prediction">Get Prediction</option>
+                <option value="model">Create Model</option>
+            </select><br><br>
+            <input id="submitButton" type="submit" value="Upload">
+        </form>
 
-    {% if success %}
-    <h2>API Response:</h2>
-    <p>Success: {{ success }}</p>
-    <p>Processing Time (ms): {{ processing_time_ms }}</p>
+        {% if success %}
+        <div class="data-container">
+            <h2>Prediction Table</h2>
+            <p>Processing Time (ms): {{ processing_time_ms }}</p>
+            <div style="overflow-x: auto;">
+                <table id="csvDataTable" class="display">
+                    <thead>
+                        <tr>
+                            {% for key in data.0 %}
+                                <th>{{ key }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in data %}
+                            <tr>
+                                {% for key, value in entry.items %}
+                                    <th>{{value}}</th>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}      
+    </div>
+
+    <!-- DataTables.js and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#csvDataTable').DataTable({
+                "scrollX": false,  // Enable horizontal scrolling if needed
+                "paging": false,    // Disable pagination for small tables
+            });
+        });
+    </script>
     
-    {% if data %}
-    <h3>Data:</h3>
-    <ul>{{ data }}</ul>
-    {% else %}
-    <p>No data returned.</p>
-    {% endif %}
-    
-    {% endif %}
 </body>
 </html>

@@ -166,11 +166,12 @@ def home(request):
         response = requests.post(endpoint, headers=headers, data=csv_data)
         if response.status_code == 200:
             response_data = response.json()
+            data = response_data.get('data', [])
             print(response_data)
             context = {
                 'success': response_data.get('success', ''),
                 'processing_time_ms': response_data.get('processing_time_ms', ''),
-                'data': response_data.get('data', [])
+                'data': data
             }
             return render(request, 'home.html', context)
         else:

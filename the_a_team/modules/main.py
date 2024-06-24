@@ -75,8 +75,6 @@ def create_new_model(training_data, model_path):
     best_mode = compare_models(sort='AUC')
     calibrated_model_failure = calibrate_model(best_mode)
     save_model(calibrated_model_failure, model_path)
-    plot_model(model, plot="feature", save=True)
-
     return best_mode
 
 
@@ -87,15 +85,28 @@ def read_existing_model(path):
 
 def get_prediction(model, unseen_data):
     prediction = predict_model(model, data=unseen_data, raw_score=True)
-    prediction = prediction.rename(
-        columns={
-            'prediction_score_0': 'NO_FAILURE',
-            'prediction_score_1': 'Tool-Wear_FAILURE',
-            'prediction_score_2': 'Heat-Dissipation FAILURE',
-            'prediction_score_3': 'Power_FAILURE',
-            'prediction_score_4': 'Overstrain_FAILURE',
-            'prediction_score_5': 'Random_FAILURE'})
-    return prediction
+    predictions = []
+    
+    for index, row in prediction.iterrows():
+        pred_dict = {
+            'Type': unseen_data['Type'][index],
+            'Air temperature [K]': unseen_data['Air temperature [K]'][index],
+            'Process temperature [K]': unseen_data['Process temperature [K]'][index],
+            'Rotational speed [rpm]': unseen_data['Rotational speed [rpm]'][index],
+            'Torque [Nm]': unseen_data['Torque [Nm]'][index],
+            'Tool wear [min]': unseen_data['Tool wear [min]'][index],
+            'Power': f"{unseen_data['Power'][index]:.1f}",
+            'Temperature difference': f"{unseen_data['Temperature difference'][index]:.1f}",
+            'No_FAILURE': row['prediction_score_0'],
+            'Toolwear_FAILURE': row['prediction_score_1'],
+            'Heat-Dissipation FAILURE': row['prediction_score_2'],
+            'Power_FAILURE': row['prediction_score_3'],
+            'Overstrain_FAILURE': row['prediction_score_4'],
+            'Random_FAILURE': row['prediction_score_5']
+        }
+        predictions.append(pred_dict)
+    
+    return predictions
 
 
 if __name__ == "__main__":
