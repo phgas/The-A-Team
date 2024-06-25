@@ -7,7 +7,7 @@ from .models import APIKey
 def api_key_created(sender, instance, created, **kwargs):
     if created:
         send_mail(
-            '📦[THE-A-TEAM] Here is your API Key',
+            '🛠️[THE-A-TEAM] Ready, Set, Prevent!',
             f'Your API Key has been generated: \n{instance.key}',
             'from@example.com',
             [instance.email],

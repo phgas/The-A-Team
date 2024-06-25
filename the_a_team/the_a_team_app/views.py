@@ -48,7 +48,7 @@ def get_prediction(request):
         return Response({'success': False, 'error': 'Invalid API Key'}, status=status.HTTP_401_UNAUTHORIZED)
     if api_key_instance.requests_left <= 0:
         if round(datetime.now().timestamp()) < api_key_instance.expiry:
-            return Response({'success': False, 'error': f'Your Key expired: Try again after {datetime.fromtimestamp(api_key_instance.expiry).strftime("%Y-%m-%d %H:%M:%S")}'}, status=429)
+            return Response({'success': False, 'error': f'Your Balance is empty: Try again after {datetime.fromtimestamp(api_key_instance.expiry).strftime("%Y-%m-%d %H:%M:%S")}'}, status=429)
         else:
             api_key_instance.requests_left = REQUESTS_AMOUNT[api_key_instance.subscription_type]
             api_key_instance.save()
@@ -85,9 +85,9 @@ def generate_new_model(request):
         api_key_instance = APIKey.objects.get(key=api_key_value)
     except APIKey.DoesNotExist:
         return Response({'success': False, 'error': 'Invalid API Key'}, status=status.HTTP_401_UNAUTHORIZED)
-    if api_key_instance.requests_left <= 0:
+    if api_key_instance.requests_left <= 9:
         if round(datetime.now().timestamp()) < api_key_instance.expiry:
-            return Response({'success': False, 'error': f'Your Key expired: Try again after {datetime.fromtimestamp(api_key_instance.expiry).strftime("%Y-%m-%d %H:%M:%S")}'}, status=429)
+            return Response({'success': False, 'error': f'Your Balance is empty: Try again after {datetime.fromtimestamp(api_key_instance.expiry).strftime("%Y-%m-%d %H:%M:%S")}'}, status=429)
         else:
             api_key_instance.requests_left = REQUESTS_AMOUNT[api_key_instance.subscription_type]
             api_key_instance.save()
